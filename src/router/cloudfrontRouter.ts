@@ -1,18 +1,47 @@
 import { publicProcedure, router } from "../trpc";
+import { CloudFrontCheckResult } from "../types/cloudfront";
+import { z } from "zod";
 import { 
   CloudFrontClient, 
   ListDistributionsCommand, 
   GetDistributionCommand,
-  Distribution,
-  DistributionSummary
+  Distribution
 } from "@aws-sdk/client-cloudfront";
-import { CloudFrontCheckResult } from "../type/cloudfront";
-import { z } from "zod";
+
+type ExtendedDistribution = Distribution & {
+  Id?: string;
+  DistributionConfig?: {
+    ViewerCertificate?: {
+      MinimumProtocolVersion?: string;
+    };
+    Origins?: {
+      Items?: Array<{
+        CustomOriginConfig?: {
+          OriginProtocolPolicy?: string;
+        };
+      }>;
+    };
+    DefaultRootObject?: string;
+    Logging?: {
+      Enabled?: boolean;
+    };
+    DefaultCacheBehavior?: {
+      ViewerProtocolPolicy?: string;
+      MinTTL?: number;
+    };
+    WebACLId?: string;
+    Restrictions?: {
+      GeoRestriction?: {
+        Quantity?: number;
+      };
+    };
+  };
+};
 
 const cloudfront = new CloudFrontClient({ region: process.env.AWS_DEFAULT_REGION || 'us-east-1' });
 
 // Helper function to get full distribution details
-const getDistributionDetails = async (distributionId: string): Promise<Distribution> => {
+const getDistributionDetails = async (distributionId: string): Promise<ExtendedDistribution> => {
   const command = new GetDistributionCommand({ Id: distributionId });
   const response = await cloudfront.send(command);
   if (!response.Distribution) {
@@ -22,7 +51,7 @@ const getDistributionDetails = async (distributionId: string): Promise<Distribut
 };
 
 // Helper function to perform checks on a distribution
-const performDistributionChecks = (distribution: Distribution): CloudFrontCheckResult[] => {
+const performDistributionChecks = (distribution: ExtendedDistribution): CloudFrontCheckResult[] => {
   const checks: CloudFrontCheckResult[] = [];
   
   // Check 1: SSL Certificate check
@@ -30,8 +59,8 @@ const performDistributionChecks = (distribution: Distribution): CloudFrontCheckR
     distributionId: distribution.Id || 'unknown',
     checkNumber: 1,
     checkName: 'SSL Certificate',
-    status: distribution.ViewerCertificate?.MinimumProtocolVersion === 'TLSv1.2_2021' ? 'OK' : 'WARNING',
-    details: `SSL Protocol Version: ${distribution.ViewerCertificate?.MinimumProtocolVersion || 'N/A'}`
+    status: distribution.DistributionConfig?.ViewerCertificate?.MinimumProtocolVersion === 'TLSv1.2_2021' ? 'OK' : 'WARNING',
+    details: `SSL Protocol Version: ${distribution.DistributionConfig?.ViewerCertificate?.MinimumProtocolVersion || 'N/A'}`
   });
 
   // Check 2: Origin Protocol Policy
@@ -39,8 +68,8 @@ const performDistributionChecks = (distribution: Distribution): CloudFrontCheckR
     distributionId: distribution.Id || 'unknown',
     checkNumber: 2,
     checkName: 'Origin Protocol Policy',
-    status: distribution.Origins?.Items?.[0]?.CustomOriginConfig?.OriginProtocolPolicy === 'https-only' ? 'OK' : 'WARNING',
-    details: `Protocol Policy: ${distribution.Origins?.Items?.[0]?.CustomOriginConfig?.OriginProtocolPolicy || 'N/A'}`
+    status: distribution.DistributionConfig?.Origins?.Items?.[0]?.CustomOriginConfig?.OriginProtocolPolicy === 'https-only' ? 'OK' : 'WARNING',
+    details: `Protocol Policy: ${distribution.DistributionConfig?.Origins?.Items?.[0]?.CustomOriginConfig?.OriginProtocolPolicy || 'N/A'}`
   });
 
   // Check 3: Default Root Object
@@ -48,8 +77,8 @@ const performDistributionChecks = (distribution: Distribution): CloudFrontCheckR
     distributionId: distribution.Id || 'unknown',
     checkNumber: 3,
     checkName: 'Default Root Object',
-    status: distribution.DefaultRootObject ? 'OK' : 'WARNING',
-    details: `Root Object: ${distribution.DefaultRootObject || 'Not Set'}`
+    status: distribution.DistributionConfig?.DefaultRootObject ? 'OK' : 'WARNING',
+    details: `Root Object: ${distribution.DistributionConfig?.DefaultRootObject || 'Not Set'}`
   });
 
   // Check 4: Logging Enabled
@@ -57,8 +86,8 @@ const performDistributionChecks = (distribution: Distribution): CloudFrontCheckR
     distributionId: distribution.Id || 'unknown',
     checkNumber: 4,
     checkName: 'Logging Status',
-    status: distribution.Logging?.Enabled ? 'OK' : 'WARNING',
-    details: distribution.Logging?.Enabled ? 'Logging Enabled' : 'Logging Disabled'
+    status: distribution.DistributionConfig?.Logging?.Enabled ? 'OK' : 'WARNING',
+    details: distribution.DistributionConfig?.Logging?.Enabled ? 'Logging Enabled' : 'Logging Disabled'
   });
 
   // Check 5: HTTPS Redirect
@@ -66,8 +95,8 @@ const performDistributionChecks = (distribution: Distribution): CloudFrontCheckR
     distributionId: distribution.Id || 'unknown',
     checkNumber: 5,
     checkName: 'HTTPS Redirect',
-    status: distribution.DefaultCacheBehavior?.ViewerProtocolPolicy === 'redirect-to-https' ? 'OK' : 'WARNING',
-    details: `Viewer Protocol Policy: ${distribution.DefaultCacheBehavior?.ViewerProtocolPolicy || 'N/A'}`
+    status: distribution.DistributionConfig?.DefaultCacheBehavior?.ViewerProtocolPolicy === 'redirect-to-https' ? 'OK' : 'WARNING',
+    details: `Viewer Protocol Policy: ${distribution.DistributionConfig?.DefaultCacheBehavior?.ViewerProtocolPolicy || 'N/A'}`
   });
 
   // Check 6: WAF Integration
@@ -75,8 +104,8 @@ const performDistributionChecks = (distribution: Distribution): CloudFrontCheckR
     distributionId: distribution.Id || 'unknown',
     checkNumber: 6,
     checkName: 'WAF Integration',
-    status: distribution.WebACLId ? 'OK' : 'WARNING',
-    details: distribution.WebACLId ? 'WAF Enabled' : 'No WAF Association'
+    status: distribution.DistributionConfig?.WebACLId ? 'OK' : 'WARNING',
+    details: distribution.DistributionConfig?.WebACLId ? 'WAF Enabled' : 'No WAF Association'
   });
 
   // Check 7: Geographic Restrictions
@@ -84,8 +113,8 @@ const performDistributionChecks = (distribution: Distribution): CloudFrontCheckR
     distributionId: distribution.Id || 'unknown',
     checkNumber: 7,
     checkName: 'Geographic Restrictions',
-    status: distribution.Restrictions?.GeoRestriction?.Quantity > 0 ? 'OK' : 'INFO',
-    details: `Geo Restrictions: ${distribution.Restrictions?.GeoRestriction?.Quantity || 0} countries`
+    status: (distribution.DistributionConfig?.Restrictions?.GeoRestriction?.Quantity ?? 0) > 0 ? 'OK' : 'INFO',
+    details: `Geo Restrictions: ${distribution.DistributionConfig?.Restrictions?.GeoRestriction?.Quantity || 0} countries`
   });
 
   // Check 8: Cache TTL Settings
@@ -93,8 +122,8 @@ const performDistributionChecks = (distribution: Distribution): CloudFrontCheckR
     distributionId: distribution.Id || 'unknown',
     checkNumber: 8,
     checkName: 'Cache TTL Settings',
-    status: distribution.DefaultCacheBehavior?.MinTTL !== undefined ? 'OK' : 'WARNING',
-    details: `Min TTL: ${distribution.DefaultCacheBehavior?.MinTTL || 'Not Set'}`
+    status: distribution.DistributionConfig?.DefaultCacheBehavior?.MinTTL !== undefined ? 'OK' : 'WARNING',
+    details: `Min TTL: ${distribution.DistributionConfig?.DefaultCacheBehavior?.MinTTL || 'Not Set'}`
   });
 
   return checks;
