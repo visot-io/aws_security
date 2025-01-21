@@ -1,0 +1,30 @@
+{
+  "name": "aws_security",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "ts-node src/test-cloudfront.ts"
+  },
+  "keywords": ["aws", "security", "cloudfront"],
+  "author": "",
+  "license": "ISC",
+  "description": "AWS CloudFront Security Analyzer",
+  "dependencies": {
+    "@aws-sdk/client-cloudfront": "^3.731.1",
+    "@trpc/client": "^10.45.2",
+    "@trpc/server": "^10.45.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.24",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
