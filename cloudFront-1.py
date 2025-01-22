@@ -32,12 +32,19 @@ logger.info(f"Reading configuration from: {config_path}")
 
 # Database connection function
 def get_db_connection():
-    return psycopg2.connect(
-        host=config['PostgreSQL']['HOST'],
-        database=config['PostgreSQL']['DATABASE'],
-        user=config['PostgreSQL']['USER'],
-        password=config['PostgreSQL']['PASSWORD']
-    )
+    try:
+        logger.info("Establishing database connection...")
+        conn = psycopg2.connect(
+            host=config['PostgreSQL']['HOST'],
+            database=config['PostgreSQL']['DATABASE'],
+            user=config['PostgreSQL']['USER'],
+            password=config['PostgreSQL']['PASSWORD']
+        )
+        logger.info("Database connection established successfully")
+        return conn
+    except (KeyError, psycopg2.Error) as e:
+        logger.error(f"Database connection error: {str(e)}")
+        raise ValueError(f"Failed to connect to database: {str(e)}")
 
 def check_cloudfront_distribution_no_non_existent_s3_origin(cloudfront_client, s3_client, account_id: str) -> List[Dict[str, Any]]:
     """Check if CloudFront distributions point to non-existent S3 buckets"""
@@ -169,13 +176,14 @@ def check_cloudfront_distribution_encryption_in_transit(cloudfront_client, accou
                     })
 
             except Exception as e:
-                print(f"Error processing distribution {dist_id}: {str(e)}")
+                logger.error(f"Error processing distribution {dist_id}: {str(e)}")
                 continue
 
+        logger.info(f"Completed encryption check for {len(distributions)} distributions")
         return results
 
     except Exception as e:
-        print(f"Error checking CloudFront distributions encryption: {str(e)}")
+        logger.error(f"Error checking CloudFront distributions encryption: {str(e)}")
         return []
 
 def check_cloudfront_distribution_geo_restrictions(cloudfront_client, account_id: str) -> List[Dict[str, Any]]:
@@ -223,13 +231,14 @@ def check_cloudfront_distribution_geo_restrictions(cloudfront_client, account_id
                     })
 
             except Exception as e:
-                print(f"Error processing distribution {dist_id}: {str(e)}")
+                logger.error(f"Error processing distribution {dist_id}: {str(e)}")
                 continue
 
+        logger.info(f"Completed geo restrictions check for {len(distributions)} distributions")
         return results
 
     except Exception as e:
-        print(f"Error checking CloudFront distributions geo restrictions: {str(e)}")
+        logger.error(f"Error checking CloudFront distributions geo restrictions: {str(e)}")
         return []
 
 def check_cloudfront_distribution_use_secure_cipher(cloudfront_client, account_id: str) -> List[Dict[str, Any]]:
@@ -286,13 +295,14 @@ def check_cloudfront_distribution_use_secure_cipher(cloudfront_client, account_i
                     })
 
             except Exception as e:
-                print(f"Error processing distribution {dist_id}: {str(e)}")
+                logger.error(f"Error processing distribution {dist_id}: {str(e)}")
                 continue
 
+        logger.info(f"Completed secure cipher check for {len(distributions)} distributions")
         return results
 
     except Exception as e:
-        print(f"Error checking CloudFront distributions secure cipher: {str(e)}")
+        logger.error(f"Error checking CloudFront distributions secure cipher: {str(e)}")
         return []
 
 def check_cloudfront_distribution_non_s3_origins_encryption(cloudfront_client, account_id: str) -> List[Dict[str, Any]]:
@@ -365,13 +375,14 @@ def check_cloudfront_distribution_non_s3_origins_encryption(cloudfront_client, a
                     })
 
             except Exception as e:
-                print(f"Error processing distribution {dist_id}: {str(e)}")
+                logger.error(f"Error processing distribution {dist_id}: {str(e)}")
                 continue
 
+        logger.info(f"Completed non-S3 origins encryption check for {len(distributions)} distributions")
         return results
 
     except Exception as e:
-        print(f"Error checking CloudFront distributions non-S3 origins encryption: {str(e)}")
+        logger.error(f"Error checking CloudFront distributions non-S3 origins encryption: {str(e)}")
         return []
 
 def check_cloudfront_distribution_no_deprecated_ssl_protocol(cloudfront_client, account_id: str) -> List[Dict[str, Any]]:
@@ -635,9 +646,9 @@ def check_cloudfront():
             return jsonify(all_results)
 
         except Exception as e:
-            print(f"Error processing checks: {str(e)}")
+            logger.error(f"Error processing checks: {str(e)}")
             conn.rollback()
-            raise e
+            raise ValueError(f"Error processing security checks: {str(e)}")
 
         finally:
             cur.close()
