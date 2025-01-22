@@ -5,7 +5,7 @@ import psycopg2
 from datetime import datetime, timezone
 import json
 import os
-import time
+import sys
 from typing import Dict, Any, List, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
@@ -16,9 +16,33 @@ from collections import defaultdict
 # Configure logging with more detail
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('cloudfront_checks.log')
+    ]
 )
 logger = logging.getLogger(__name__)
+
+def log_error(error: Exception, context: str, extra_info: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """Centralized error logging function that returns structured error response"""
+    error_msg = f"Error in {context}: {str(error)}"
+    if extra_info:
+        error_msg += f" | Additional info: {extra_info}"
+    logger.error(error_msg)
+    return {
+        "error": str(error),
+        "context": context,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "extra_info": extra_info
+    }
+
+def log_warning(message: str, context: str, extra_info: Optional[Dict[str, Any]] = None) -> None:
+    """Centralized warning logging function"""
+    warning_msg = f"Warning in {context}: {message}"
+    if extra_info:
+        warning_msg += f" | Additional info: {extra_info}"
+    logger.warning(warning_msg)
 
 app = Flask(__name__)
 
@@ -71,7 +95,7 @@ def get_all_distributions(cloudfront_client) -> List[Dict]:
         logger.info(f"Cached {len(distributions)} CloudFront distributions")
         return distributions
     except Exception as e:
-        logger.error(f"Error fetching distributions: {e}")
+        log_error(e, "fetching distributions")
         return []
 
 @lru_cache(maxsize=1)
@@ -83,7 +107,7 @@ def get_all_s3_buckets(s3_client) -> set[str]:
         logger.info(f"Cached {len(buckets)} S3 buckets")
         return buckets
     except Exception as e:
-        logger.error(f"Error listing S3 buckets: {e}")
+        log_error(e, "listing S3 buckets")
         return set()
 
 @lru_cache(maxsize=256)
@@ -94,7 +118,7 @@ def get_distribution_config_cached(cloudfront_client, dist_id: str) -> Optional[
         logger.debug(f"Cached configuration for distribution {dist_id}")
         return config
     except Exception as e:
-        logger.error(f"Error getting config for distribution {dist_id}: {e}")
+        log_error(e, f"getting config for distribution {dist_id}")
         return None
 
 def get_distribution_config(cloudfront_client, dist_id: str) -> Optional[Dict]:
@@ -132,7 +156,11 @@ def check_distribution(dist: Dict, config: Dict, check_type: str, account_id: st
             return check_logging(dist_id, dist_arn, dist_config, account_id)
         return None
     except Exception as e:
-        logger.error(f"Error in {check_type} check for distribution {dist_id}: {e}")
+        log_error(e, f"{check_type} check for distribution {dist_id}", {
+            "distribution_id": dist_id,
+            "check_type": check_type,
+            "account_id": account_id
+        })
         return None
 
 def check_s3_origins(dist_id: str, dist_arn: str, dist_config: Dict, 
@@ -221,24 +249,13 @@ def format_bucket_message(dist_id: str, buckets: List[str]) -> str:
         return f"{dist_id} point to non-existent S3 origins {buckets[0]} and {buckets[1]}."
     return f"{dist_id} point to non-existent S3 origin {buckets[0]}."
 
-def batch_insert_results(results: List[Dict[str, Any]], batch_size: int = 1000) -> None:
-    """Batch insert results into database with retries and chunking"""
+def batch_insert_results(results: List[Dict[str, Any]]) -> None:
+    """Batch insert results into database"""
     if not results:
         return
-
-    # Convert results to tuples once
-    args = [(r['reason'], r['resource'], r['status']) for r in results if r]
-    if not args:
-        return
-
-    # Split into smaller batches to avoid memory issues
-    batches = [args[i:i + batch_size] for i in range(0, len(args), batch_size)]
-    logger.info(f"Splitting {len(args)} results into {len(batches)} batches of size {batch_size}")
-    
-    max_retries = 3
-    retry_delay = 1  # seconds
-    
+        
     conn = None
+    cur = None
     try:
         # Get database credentials from environment variables
         host = os.environ.get('POSTGRES_HOST')
@@ -249,55 +266,33 @@ def batch_insert_results(results: List[Dict[str, Any]], batch_size: int = 1000) 
         if not all([host, database, user, password]):
             raise ValueError("Missing required database credentials in environment variables")
             
-        # Connect with connection pooling settings
         conn = psycopg2.connect(
             host=host,
             database=database,
             user=user,
-            password=password,
-            # Connection pool settings
-            minconn=1,
-            maxconn=10
+            password=password
+        )
+        cur = conn.cursor()
+        
+        args = [(r['reason'], r['resource'], r['status']) for r in results if r]
+        cur.executemany(
+            """
+            INSERT INTO aws_project_status (description, resource, status)
+            VALUES (%s, %s, %s)
+            """,
+            args
         )
         
-        # Set session parameters for better performance
-        with conn.cursor() as cur:
-            cur.execute("SET synchronous_commit = off")  # Faster inserts, small risk of data loss
-            cur.execute("SET work_mem = '64MB'")        # More memory for sorting
-        
-        total_inserted = 0
-        for batch_num, batch in enumerate(batches, 1):
-            for attempt in range(max_retries):
-                try:
-                    with conn.cursor() as cur:
-                        cur.executemany(
-                            """
-                            INSERT INTO aws_project_status (description, resource, status)
-                            VALUES (%s, %s, %s)
-                            """,
-                            batch
-                        )
-                        conn.commit()
-                        total_inserted += len(batch)
-                        logger.info(f"Batch {batch_num}/{len(batches)} inserted successfully ({len(batch)} records)")
-                        break
-                except Exception as e:
-                    logger.error(f"Error inserting batch {batch_num}: {e}")
-                    conn.rollback()
-                    if attempt < max_retries - 1:
-                        logger.info(f"Retrying batch {batch_num} in {retry_delay} seconds...")
-                        time.sleep(retry_delay)
-                        retry_delay *= 2  # Exponential backoff
-                    else:
-                        logger.error(f"Failed to insert batch {batch_num} after {max_retries} attempts")
-                        raise
-        
-        logger.info(f"Successfully inserted {total_inserted} records in {len(batches)} batches")
-        
+        conn.commit()
+        logger.info(f"Successfully inserted {len(args)} results into database")
     except Exception as e:
-        logger.error(f"Database error: {e}")
-        raise
+        error_info = log_error(e, "database operation", {"operation": "batch_insert"})
+        if conn:
+            conn.rollback()
+        raise ValueError(error_info["error"])
     finally:
+        if cur:
+            cur.close()
         if conn:
             conn.close()
 
@@ -334,7 +329,10 @@ def check_cloudfront():
                     if config:
                         dist_configs[dist_id] = config
                 except Exception as e:
-                    logger.error(f"Error fetching config for distribution {dist_id}: {e}")
+                    log_error(e, f"fetching config for distribution {dist_id}", {
+                        "distribution_id": dist_id,
+                        "operation": "get_distribution_config"
+                    })
         
         logger.info(f"Prepared {len(dist_configs)} distribution configs")
         
@@ -358,7 +356,131 @@ def check_cloudfront():
             # Submit all checks for all distributions
             for dist in distributions:
                 if dist['Id'] not in dist_configs:
-                    logger.warning(f"Skipping distribution {dist['Id']} - no config available")
+                    log_warning("No configuration available", "check_cloudfront", {
+                        "distribution_id": dist['Id'],
+                        "action": "skipping"
+                    })
+                    continue
+                    
+                for check_type in check_types:
+                    future = executor.submit(
+                        check_distribution,
+                        dist,
+                        dist_configs[dist['Id']],
+                        check_type,
+                        aws.account_id,
+                        existing_buckets if check_type == "s3_origin" else None
+                    )
+                    future_to_check[future] = (dist['Id'], check_type)
+            
+            logger.info(f"Submitted {len(future_to_check)} checks for processing")
+            
+            # Track progress
+            completed = 0
+            total = len(future_to_check)
+            
+            # Collect results as they complete
+            for future in as_completed(future_to_check):
+                dist_id, check_type = future_to_check[future]
+                try:
+                    result = future.result()
+                    if result:
+                        all_results.append(result)
+                    completed += 1
+                    if completed % 10 == 0:
+                        logger.info(f"Progress: {completed}/{total} checks completed ({(completed/total)*100:.1f}%)")
+                except Exception as e:
+                    log_error(e, f"{check_type} check for {dist_id}", {
+                        "distribution_id": dist_id,
+                        "check_type": check_type,
+                        "account_id": aws.account_id
+                    })
+        
+        logger.info(f"Collected {len(all_results)} check results")
+        
+        if all_results:
+            # Batch insert results
+            try:
+                batch_insert_results(all_results)
+                logger.info("Successfully inserted results into database")
+            except Exception as e:
+                logger.error(f"Error inserting results into database: {e}")
+        
+        end_time = datetime.now()
+        duration = (end_time - start_time).total_seconds()
+        logger.info(f"Completed all checks in {duration} seconds")
+        
+        return jsonify({
+            "results": all_results,
+            "total_checks": len(future_to_check),
+            "successful_checks": len(all_results),
+            "duration_seconds": duration,
+            "distributions_processed": len(distributions),
+            "configs_processed": len(dist_configs)
+        })
+    
+    except Exception as e:
+        error_info = log_error(e, "check_cloudfront")
+        return jsonify(error_info), 500
+
+def test_checks():
+    """Run checks directly without Flask server"""
+    start_time = datetime.now()
+    logger.info("Starting CloudFront checks")
+    
+    try:
+        # Initialize AWS clients
+        aws = get_aws_clients()
+        logger.info("AWS clients initialized")
+        
+        # Get cached data
+        distributions = get_all_distributions(aws.cloudfront)
+        existing_buckets = get_all_s3_buckets(aws.s3)
+        logger.info(f"Found {len(distributions)} distributions")
+        
+        if not distributions:
+            logger.error("No CloudFront distributions found")
+            return
+        
+        # Prepare distribution configs
+        dist_configs = {}
+        with ThreadPoolExecutor(max_workers=min(len(distributions), 10)) as executor:
+            future_to_dist = {
+                executor.submit(get_distribution_config, aws.cloudfront, dist['Id']): dist['Id']
+                for dist in distributions
+            }
+            
+            for future in as_completed(future_to_dist):
+                dist_id = future_to_dist[future]
+                try:
+                    config = future.result()
+                    if config:
+                        dist_configs[dist_id] = config
+                except Exception as e:
+                    logger.error(f"Error fetching config for distribution {dist_id}: {e}")
+        
+        logger.info(f"Prepared {len(dist_configs)} distribution configs")
+        
+        # Define check types
+        check_types = [
+            "s3_origin", "encryption", "geo_restrictions", 
+            "secure_cipher", "logging", "non_s3_origins_encryption",
+            "deprecated_ssl_protocol", "custom_origins_encryption"
+        ]
+        
+        # Calculate optimal number of workers
+        total_checks = len(distributions) * len(check_types)
+        cpu_count = os.cpu_count() or 2
+        max_workers = min(total_checks, cpu_count * 2)
+        logger.info(f"Using {max_workers} workers for {total_checks} total checks")
+        
+        all_results = []
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_check = {}
+            
+            # Submit all checks for all distributions
+            for dist in distributions:
+                if dist['Id'] not in dist_configs:
                     continue
                     
                 for check_type in check_types:
@@ -405,22 +527,26 @@ def check_cloudfront():
         duration = (end_time - start_time).total_seconds()
         logger.info(f"Completed all checks in {duration} seconds")
         
-        return jsonify({
+        return {
             "results": all_results,
             "total_checks": len(future_to_check),
             "successful_checks": len(all_results),
             "duration_seconds": duration,
             "distributions_processed": len(distributions),
             "configs_processed": len(dist_configs)
-        })
+        }
     
     except Exception as e:
-        logger.error(f"Error in check_cloudfront: {e}")
-        return jsonify({
-            "error": str(e),
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        }), 500
+        logger.error(f"Error in test_checks: {e}")
+        return None
 
 if __name__ == '__main__':
-    logger.info("Starting server on port 5001...")
-    app.run(debug=True, port=5001)
+    if len(sys.argv) > 1 and sys.argv[1] == '--test':
+        # Run checks directly
+        results = test_checks()
+        if results:
+            print(json.dumps(results, indent=2))
+    else:
+        # Start Flask server
+        logger.info("Starting server on port 5001...")
+        app.run(debug=True, port=5001)
