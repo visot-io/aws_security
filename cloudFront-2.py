@@ -270,7 +270,10 @@ def batch_insert_results(results: List[Dict[str, Any]]) -> None:
     if not results:
         return
         
+    conn = None
+    cur = None
     try:
+        # Connect to database
         conn = psycopg2.connect(
             host=os.environ.get('POSTGRES_HOST', 'localhost'),
             database=os.environ.get('POSTGRES_DB', 'postgres'),
@@ -279,25 +282,36 @@ def batch_insert_results(results: List[Dict[str, Any]]) -> None:
         )
         cur = conn.cursor()
         
+        # Prepare and execute batch insert
         args = [(r['reason'], r['resource'], r['status']) for r in results if r]
-        cur.executemany(
-            """
-            INSERT INTO aws_project_status (description, resource, status)
-            VALUES (%s, %s, %s)
-            """,
-            args
-        )
-        
-        conn.commit()
+        if args:  # Only attempt insert if we have valid results
+            cur.executemany(
+                """
+                INSERT INTO aws_project_status (description, resource, status)
+                VALUES (%s, %s, %s)
+                """,
+                args
+            )
+            conn.commit()
+            logger.info(f"Successfully inserted {len(args)} results into database")
     except Exception as e:
         logger.error(f"Database error: {e}")
         if conn:
-            conn.rollback()
+            try:
+                conn.rollback()
+            except Exception as rollback_error:
+                logger.error(f"Error rolling back transaction: {rollback_error}")
     finally:
         if cur:
-            cur.close()
+            try:
+                cur.close()
+            except Exception as cur_error:
+                logger.error(f"Error closing cursor: {cur_error}")
         if conn:
-            conn.close()
+            try:
+                conn.close()
+            except Exception as conn_error:
+                logger.error(f"Error closing connection: {conn_error}")
 
 @app.route('/check-cloudfront-2')
 def check_cloudfront():
@@ -376,9 +390,14 @@ def check_cloudfront():
                     
         logger.info(f"Completed {len(all_results)} checks successfully")
         
-        # Insert results into database
-        if all_results: 
-            batch_insert_results(all_results)
+        # Insert results into database if we have any
+        if all_results:
+            try:
+                batch_insert_results(all_results)
+                logger.info(f"Successfully stored {len(all_results)} results in database")
+            except Exception as db_error:
+                logger.error(f"Failed to insert results into database: {db_error}")
+                # Continue execution to return results even if DB insert fails
         
         end_time = datetime.now()
         duration = (end_time - start_time).total_seconds()
@@ -386,7 +405,7 @@ def check_cloudfront():
         
         return jsonify({
             "results": all_results,
-            "total_checks": len(distributions) * 8,  # 8 checks per distribution
+            "total_checks": len(distributions) * len(check_functions),
             "successful_checks": len(all_results),
             "duration_seconds": duration
         })
