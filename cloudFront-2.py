@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
 from logging.config import dictConfig
 from functools import lru_cache
+from dataclasses import dataclass
 
 # Configure logging
 dictConfig({
@@ -30,13 +31,29 @@ dictConfig({
 app = Flask(__name__)
 logger = app.logger
 
-def get_aws_session():
-    """Create a boto3 session with credentials from environment"""
-    return boto3.Session(
+@dataclass
+class AWSClients:
+    """Class to hold AWS client instances"""
+    session: boto3.Session
+    cloudfront: Any
+    s3: Any
+    sts: Any
+    account_id: str
+
+def get_aws_clients() -> AWSClients:
+    """Create and cache AWS client instances"""
+    session = boto3.Session(
         aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID_AWS_ACCESS_KEY_ID'),
         aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY_AWS_SECRET_ACCESS_KEY'),
         region_name=os.environ.get('AWS_DEFAULT_REGION_AWS_DEFAULT_REGION', 'us-east-1')
     )
+    
+    cloudfront = session.client('cloudfront')
+    s3 = session.client('s3')
+    sts = session.client('sts')
+    account_id = sts.get_caller_identity()['Account']
+    
+    return AWSClients(session, cloudfront, s3, sts, account_id)
 
 @lru_cache(maxsize=1)
 def get_all_distributions(cloudfront_client) -> List[Dict]:
@@ -289,14 +306,12 @@ def check_cloudfront():
     logger.info("Starting CloudFront security checks")
     
     try:
-        # Create AWS session and clients
-        session = get_aws_session()
-        cloudfront_client = session.client('cloudfront')
-        sts_client = session.client('sts')
-        account_id = sts_client.get_caller_identity()["Account"]
+        # Initialize AWS clients
+        aws = get_aws_clients()
+        logger.info("AWS clients initialized")
         
         # Get all distributions using cached function
-        distributions = get_all_distributions(cloudfront_client)
+        distributions = get_all_distributions(aws.cloudfront)
         
         if not distributions:
             return jsonify({"error": "No CloudFront distributions found"}), 404
@@ -305,7 +320,7 @@ def check_cloudfront():
         logger.info("Pre-fetching distribution configurations...")
         dist_configs = {}
         for dist in distributions:
-            config = get_distribution_config(cloudfront_client, dist['Id'])
+            config = get_distribution_config(aws.cloudfront, dist['Id'])
             if config:
                 dist_configs[dist['Id']] = config
         logger.info(f"Cached {len(dist_configs)} distribution configurations")
@@ -341,9 +356,9 @@ def check_cloudfront():
                 for check_fn in check_functions:
                     future = executor.submit(
                         check_fn,
-                        cloudfront_client,
+                        aws.cloudfront,
                         dist,
-                        account_id,
+                        aws.account_id,
                         config
                     )
                     future_to_check[future] = (dist['Id'], check_fn.__name__)
