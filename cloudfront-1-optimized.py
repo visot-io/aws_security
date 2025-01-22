@@ -5,6 +5,7 @@ import psycopg2
 from datetime import datetime, timezone
 import json
 import os
+import time
 from typing import Dict, Any, List, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
@@ -220,13 +221,24 @@ def format_bucket_message(dist_id: str, buckets: List[str]) -> str:
         return f"{dist_id} point to non-existent S3 origins {buckets[0]} and {buckets[1]}."
     return f"{dist_id} point to non-existent S3 origin {buckets[0]}."
 
-def batch_insert_results(results: List[Dict[str, Any]]) -> None:
-    """Batch insert results into database"""
+def batch_insert_results(results: List[Dict[str, Any]], batch_size: int = 1000) -> None:
+    """Batch insert results into database with retries and chunking"""
     if not results:
         return
-        
+
+    # Convert results to tuples once
+    args = [(r['reason'], r['resource'], r['status']) for r in results if r]
+    if not args:
+        return
+
+    # Split into smaller batches to avoid memory issues
+    batches = [args[i:i + batch_size] for i in range(0, len(args), batch_size)]
+    logger.info(f"Splitting {len(args)} results into {len(batches)} batches of size {batch_size}")
+    
+    max_retries = 3
+    retry_delay = 1  # seconds
+    
     conn = None
-    cur = None
     try:
         # Get database credentials from environment variables
         host = os.environ.get('POSTGRES_HOST')
@@ -237,32 +249,55 @@ def batch_insert_results(results: List[Dict[str, Any]]) -> None:
         if not all([host, database, user, password]):
             raise ValueError("Missing required database credentials in environment variables")
             
+        # Connect with connection pooling settings
         conn = psycopg2.connect(
             host=host,
             database=database,
             user=user,
-            password=password
-        )
-        cur = conn.cursor()
-        
-        args = [(r['reason'], r['resource'], r['status']) for r in results if r]
-        cur.executemany(
-            """
-            INSERT INTO aws_project_status (description, resource, status)
-            VALUES (%s, %s, %s)
-            """,
-            args
+            password=password,
+            # Connection pool settings
+            minconn=1,
+            maxconn=10
         )
         
-        conn.commit()
-        logger.info(f"Successfully inserted {len(args)} results into database")
+        # Set session parameters for better performance
+        with conn.cursor() as cur:
+            cur.execute("SET synchronous_commit = off")  # Faster inserts, small risk of data loss
+            cur.execute("SET work_mem = '64MB'")        # More memory for sorting
+        
+        total_inserted = 0
+        for batch_num, batch in enumerate(batches, 1):
+            for attempt in range(max_retries):
+                try:
+                    with conn.cursor() as cur:
+                        cur.executemany(
+                            """
+                            INSERT INTO aws_project_status (description, resource, status)
+                            VALUES (%s, %s, %s)
+                            """,
+                            batch
+                        )
+                        conn.commit()
+                        total_inserted += len(batch)
+                        logger.info(f"Batch {batch_num}/{len(batches)} inserted successfully ({len(batch)} records)")
+                        break
+                except Exception as e:
+                    logger.error(f"Error inserting batch {batch_num}: {e}")
+                    conn.rollback()
+                    if attempt < max_retries - 1:
+                        logger.info(f"Retrying batch {batch_num} in {retry_delay} seconds...")
+                        time.sleep(retry_delay)
+                        retry_delay *= 2  # Exponential backoff
+                    else:
+                        logger.error(f"Failed to insert batch {batch_num} after {max_retries} attempts")
+                        raise
+        
+        logger.info(f"Successfully inserted {total_inserted} records in {len(batches)} batches")
+        
     except Exception as e:
         logger.error(f"Database error: {e}")
-        if conn:
-            conn.rollback()
+        raise
     finally:
-        if cur:
-            cur.close()
         if conn:
             conn.close()
 
@@ -284,25 +319,46 @@ def check_cloudfront():
         if not distributions:
             return jsonify({"error": "No CloudFront distributions found"}), 404
         
-        # Prepare distribution configs
+        # Prepare distribution configs in parallel
         dist_configs = {}
-        for dist in distributions:
-            config = get_distribution_config(aws.cloudfront, dist['Id'])
-            if config:
-                dist_configs[dist['Id']] = config
+        with ThreadPoolExecutor(max_workers=min(len(distributions), 10)) as executor:
+            future_to_dist = {
+                executor.submit(get_distribution_config, aws.cloudfront, dist['Id']): dist['Id']
+                for dist in distributions
+            }
+            
+            for future in as_completed(future_to_dist):
+                dist_id = future_to_dist[future]
+                try:
+                    config = future.result()
+                    if config:
+                        dist_configs[dist_id] = config
+                except Exception as e:
+                    logger.error(f"Error fetching config for distribution {dist_id}: {e}")
+        
         logger.info(f"Prepared {len(dist_configs)} distribution configs")
         
         # Define check types
-        check_types = ["s3_origin", "encryption", "geo_restrictions", 
-                      "secure_cipher", "logging"]
+        check_types = [
+            "s3_origin", "encryption", "geo_restrictions", 
+            "secure_cipher", "logging", "non_s3_origins_encryption",
+            "deprecated_ssl_protocol", "custom_origins_encryption"
+        ]
+        
+        # Calculate optimal number of workers based on CPU cores and workload
+        total_checks = len(distributions) * len(check_types)
+        cpu_count = os.cpu_count() or 2  # Default to 2 if CPU count cannot be determined
+        max_workers = min(total_checks, cpu_count * 2)  # Double the CPU count for I/O-bound tasks
+        logger.info(f"Using {max_workers} workers for {total_checks} total checks (CPU cores: {cpu_count})")
         
         all_results = []
-        with ThreadPoolExecutor(max_workers=min(len(distributions), 10)) as executor:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_to_check = {}
             
             # Submit all checks for all distributions
             for dist in distributions:
                 if dist['Id'] not in dist_configs:
+                    logger.warning(f"Skipping distribution {dist['Id']} - no config available")
                     continue
                     
                 for check_type in check_types:
@@ -318,6 +374,10 @@ def check_cloudfront():
             
             logger.info(f"Submitted {len(future_to_check)} checks for processing")
             
+            # Track progress
+            completed = 0
+            total = len(future_to_check)
+            
             # Collect results as they complete
             for future in as_completed(future_to_check):
                 dist_id, check_type = future_to_check[future]
@@ -325,6 +385,9 @@ def check_cloudfront():
                     result = future.result()
                     if result:
                         all_results.append(result)
+                    completed += 1
+                    if completed % 10 == 0:
+                        logger.info(f"Progress: {completed}/{total} checks completed ({(completed/total)*100:.1f}%)")
                 except Exception as e:
                     logger.error(f"Error in {check_type} check for {dist_id}: {e}")
         
@@ -346,7 +409,9 @@ def check_cloudfront():
             "results": all_results,
             "total_checks": len(future_to_check),
             "successful_checks": len(all_results),
-            "duration_seconds": duration
+            "duration_seconds": duration,
+            "distributions_processed": len(distributions),
+            "configs_processed": len(dist_configs)
         })
     
     except Exception as e:
