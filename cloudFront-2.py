@@ -4,7 +4,8 @@ import configparser
 import psycopg2
 from datetime import datetime, timezone
 import os
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
 from logging.config import dictConfig
 from functools import lru_cache
@@ -309,54 +310,56 @@ def check_cloudfront():
                 dist_configs[dist['Id']] = config
         logger.info(f"Cached {len(dist_configs)} distribution configurations")
         
-        # Run all checks sequentially using cached configs
+        # Define all check functions
+        check_functions = [
+            check_sni,
+            check_waf,
+            check_origin_failover,
+            check_default_root,
+            check_custom_ssl,
+            check_origin_access_identity,
+            check_field_level_encryption,
+            check_tls_version
+        ]
+        
+        # Run all checks in parallel using ThreadPoolExecutor
         all_results = []
-        for dist in distributions:
-            if dist['Id'] not in dist_configs:
-                logger.warning(f"Skipping distribution {dist['Id']} - no config available")
-                continue
+        max_workers = min(len(distributions) * len(check_functions), 10)  # Cap at 10 workers
+        logger.info(f"Starting parallel execution with {max_workers} workers")
+        
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_check = {}
+            
+            # Submit all checks for all distributions
+            for dist in distributions:
+                if dist['Id'] not in dist_configs:
+                    logger.warning(f"Skipping distribution {dist['Id']} - no config available")
+                    continue
+                    
+                config = dist_configs[dist['Id']]
                 
-            config = dist_configs[dist['Id']]
+                for check_fn in check_functions:
+                    future = executor.submit(
+                        check_fn,
+                        cloudfront_client,
+                        dist,
+                        account_id,
+                        config
+                    )
+                    future_to_check[future] = (dist['Id'], check_fn.__name__)
             
-            # Check 1: SNI
-            result = check_sni(cloudfront_client, dist, account_id, config)
-            if result:
-                all_results.append(result)
-            
-            # Check 2: WAF
-            result = check_waf(cloudfront_client, dist, account_id, config)
-            if result:
-                all_results.append(result)
-            
-            # Check 3: Origin Failover
-            result = check_origin_failover(cloudfront_client, dist, account_id, config)
-            if result:
-                all_results.append(result)
-            
-            # Check 4: Default Root Object
-            result = check_default_root(cloudfront_client, dist, account_id, config)
-            if result:
-                all_results.append(result)
-            
-            # Check 5: Custom SSL Certificate
-            result = check_custom_ssl(cloudfront_client, dist, account_id, config)
-            if result:
-                all_results.append(result)
-            
-            # Check 6: Origin Access Identity
-            result = check_origin_access_identity(cloudfront_client, dist, account_id, config)
-            if result:
-                all_results.append(result)
-            
-            # Check 7: Field-level Encryption
-            result = check_field_level_encryption(cloudfront_client, dist, account_id, config)
-            if result:
-                all_results.append(result)
-            
-            # Check 8: TLS Version
-            result = check_tls_version(cloudfront_client, dist, account_id, config)
-            if result:
-                all_results.append(result)
+            # Collect results as they complete
+            for future in as_completed(future_to_check):
+                dist_id, check_name = future_to_check[future]
+                try:
+                    result = future.result()
+                    if result:
+                        all_results.append(result)
+                        logger.debug(f"Completed {check_name} for distribution {dist_id}")
+                except Exception as e:
+                    logger.error(f"Error in {check_name} for distribution {dist_id}: {e}")
+                    
+        logger.info(f"Completed {len(all_results)} checks successfully")
         
         # Insert results into database
         if all_results: 
