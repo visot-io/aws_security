@@ -1,0 +1,86 @@
+2025-01-22 21:03:16,372 - __main__ - INFO - Starting server on port 5001...
+2025-01-22 21:03:16,384 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-01-22 21:03:16,384 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-22 21:03:16,385 - werkzeug - INFO -  * Restarting with stat
+2025-01-22 21:03:16,640 - __main__ - INFO - Starting server on port 5001...
+2025-01-22 21:03:16,649 - werkzeug - WARNING -  * Debugger is active!
+2025-01-22 21:03:16,651 - werkzeug - INFO -  * Debugger PIN: 157-784-517
+2025-01-22 21:03:42,034 - __main__ - INFO - Starting CloudFront checks
+2025-01-22 21:03:42,469 - __main__ - INFO - Successfully initialized AWS clients
+2025-01-22 21:03:42,469 - __main__ - INFO - AWS clients initialized
+2025-01-22 21:03:43,345 - __main__ - INFO - Cached 22 CloudFront distributions
+2025-01-22 21:03:43,600 - __main__ - ERROR - Error in listing S3 buckets: An error occurred (AccessDenied) when calling the ListBuckets operation: User: arn:aws:iam::502685744548:user/audit-user is not authorized to perform: s3:ListAllMyBuckets with an explicit deny in an identity-based policy
+2025-01-22 21:03:43,601 - __main__ - INFO - Found 22 distributions
+2025-01-22 21:03:44,368 - __main__ - INFO - Prepared 22 distribution configs
+2025-01-22 21:03:44,368 - __main__ - INFO - Using 16 workers for 176 total checks (CPU cores: 8)
+2025-01-22 21:03:44,374 - __main__ - INFO - Submitted 176 checks for processing
+2025-01-22 21:03:44,376 - __main__ - INFO - Progress: 10/176 checks completed (5.7%)
+2025-01-22 21:03:44,376 - __main__ - INFO - Progress: 20/176 checks completed (11.4%)
+2025-01-22 21:03:44,376 - __main__ - INFO - Progress: 30/176 checks completed (17.0%)
+2025-01-22 21:03:44,376 - __main__ - INFO - Progress: 40/176 checks completed (22.7%)
+2025-01-22 21:03:44,376 - __main__ - INFO - Progress: 50/176 checks completed (28.4%)
+2025-01-22 21:03:44,376 - __main__ - INFO - Progress: 60/176 checks completed (34.1%)
+2025-01-22 21:03:44,377 - __main__ - INFO - Progress: 70/176 checks completed (39.8%)
+2025-01-22 21:03:44,377 - __main__ - INFO - Progress: 80/176 checks completed (45.5%)
+2025-01-22 21:03:44,377 - __main__ - INFO - Progress: 90/176 checks completed (51.1%)
+2025-01-22 21:03:44,377 - __main__ - INFO - Progress: 100/176 checks completed (56.8%)
+2025-01-22 21:03:44,377 - __main__ - INFO - Progress: 110/176 checks completed (62.5%)
+2025-01-22 21:03:44,377 - __main__ - INFO - Progress: 120/176 checks completed (68.2%)
+2025-01-22 21:03:44,377 - __main__ - INFO - Progress: 130/176 checks completed (73.9%)
+2025-01-22 21:03:44,377 - __main__ - INFO - Progress: 140/176 checks completed (79.5%)
+2025-01-22 21:03:44,377 - __main__ - INFO - Progress: 150/176 checks completed (85.2%)
+2025-01-22 21:03:44,378 - __main__ - INFO - Progress: 160/176 checks completed (90.9%)
+2025-01-22 21:03:44,378 - __main__ - INFO - Progress: 170/176 checks completed (96.6%)
+2025-01-22 21:03:44,379 - __main__ - INFO - Collected 110 check results
+2025-01-22 21:03:44,380 - __main__ - ERROR - Error in database operation: connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+ | Additional info: {'operation': 'batch_insert'}
+2025-01-22 21:03:44,380 - __main__ - ERROR - Error inserting results into database: connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+2025-01-22 21:03:44,380 - __main__ - INFO - Completed all checks in 2.346184 seconds
+2025-01-22 21:03:44,383 - werkzeug - INFO - 127.0.0.1 - - [22/Jan/2025 21:03:44] "GET /check-cloudfront-1 HTTP/1.1" 200 -
+2025-01-22 21:06:18,440 - __main__ - INFO - Starting server on port 5001...
+2025-01-22 21:07:03,285 - __main__ - INFO - Starting server on port 5001...
+2025-01-22 21:07:03,296 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-01-22 21:07:03,296 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-22 21:07:03,297 - werkzeug - INFO -  * Restarting with stat
+2025-01-22 21:07:03,555 - __main__ - INFO - Starting server on port 5001...
+2025-01-22 21:07:03,564 - werkzeug - WARNING -  * Debugger is active!
+2025-01-22 21:07:03,566 - werkzeug - INFO -  * Debugger PIN: 157-784-517
+2025-01-22 21:08:55,788 - __main__ - INFO - Starting CloudFront checks
+2025-01-22 21:08:56,239 - __main__ - INFO - Successfully initialized AWS clients
+2025-01-22 21:08:56,239 - __main__ - INFO - AWS clients initialized
+2025-01-22 21:08:57,170 - __main__ - INFO - Cached 22 CloudFront distributions
+2025-01-22 21:08:57,434 - __main__ - ERROR - Error in listing S3 buckets: An error occurred (AccessDenied) when calling the ListBuckets operation: User: arn:aws:iam::502685744548:user/audit-user is not authorized to perform: s3:ListAllMyBuckets with an explicit deny in an identity-based policy
+2025-01-22 21:08:57,434 - __main__ - INFO - Found 22 distributions
+2025-01-22 21:08:59,029 - __main__ - INFO - Prepared 22 distribution configs
+2025-01-22 21:08:59,030 - __main__ - INFO - Using 16 workers for 176 total checks
+2025-01-22 21:08:59,059 - __main__ - INFO - Submitted 176 checks for processing
+2025-01-22 21:08:59,061 - __main__ - INFO - Progress: 10/176 checks completed (5.7%)
+2025-01-22 21:08:59,061 - __main__ - INFO - Progress: 20/176 checks completed (11.4%)
+2025-01-22 21:08:59,061 - __main__ - INFO - Progress: 30/176 checks completed (17.0%)
+2025-01-22 21:08:59,061 - __main__ - INFO - Progress: 40/176 checks completed (22.7%)
+2025-01-22 21:08:59,062 - __main__ - INFO - Progress: 50/176 checks completed (28.4%)
+2025-01-22 21:08:59,062 - __main__ - INFO - Progress: 60/176 checks completed (34.1%)
+2025-01-22 21:08:59,062 - __main__ - INFO - Progress: 70/176 checks completed (39.8%)
+2025-01-22 21:08:59,062 - __main__ - INFO - Progress: 80/176 checks completed (45.5%)
+2025-01-22 21:08:59,063 - __main__ - INFO - Progress: 90/176 checks completed (51.1%)
+2025-01-22 21:08:59,063 - __main__ - INFO - Progress: 100/176 checks completed (56.8%)
+2025-01-22 21:08:59,063 - __main__ - INFO - Progress: 110/176 checks completed (62.5%)
+2025-01-22 21:08:59,063 - __main__ - INFO - Progress: 120/176 checks completed (68.2%)
+2025-01-22 21:08:59,064 - __main__ - INFO - Progress: 130/176 checks completed (73.9%)
+2025-01-22 21:08:59,064 - __main__ - INFO - Progress: 140/176 checks completed (79.5%)
+2025-01-22 21:08:59,064 - __main__ - INFO - Progress: 150/176 checks completed (85.2%)
+2025-01-22 21:08:59,064 - __main__ - INFO - Progress: 160/176 checks completed (90.9%)
+2025-01-22 21:08:59,064 - __main__ - INFO - Progress: 170/176 checks completed (96.6%)
+2025-01-22 21:08:59,066 - __main__ - INFO - Collected 110 check results
+2025-01-22 21:08:59,090 - __main__ - INFO - Successfully inserted 110 results into database
+2025-01-22 21:08:59,090 - __main__ - INFO - Successfully inserted results into database
+2025-01-22 21:08:59,091 - __main__ - INFO - Completed all checks in 3.302617 seconds
