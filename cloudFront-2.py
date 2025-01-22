@@ -52,13 +52,18 @@ def get_all_distributions(cloudfront_client) -> List[Dict]:
         logger.error(f"Error fetching distributions: {e}")
         return []
 
-def get_distribution_config(cloudfront_client, dist_id: str) -> Optional[Dict]:
-    """Get distribution config with error handling"""
+@lru_cache(maxsize=256)
+def get_distribution_config_cached(cloudfront_client, dist_id: str) -> Optional[Dict]:
+    """Get and cache distribution config"""
     try:
         return cloudfront_client.get_distribution_config(Id=dist_id)
     except Exception as e:
         logger.error(f"Error getting config for distribution {dist_id}: {e}")
         return None
+
+def get_distribution_config(cloudfront_client, dist_id: str) -> Optional[Dict]:
+    """Get distribution config with caching"""
+    return get_distribution_config_cached(cloudfront_client, dist_id)
 
 def create_check_result(check_type: str, resource: str, status: str, reason: str, account_id: str) -> Dict[str, Any]:
     """Create a standardized check result"""
@@ -71,12 +76,11 @@ def create_check_result(check_type: str, resource: str, status: str, reason: str
         "account": account_id
     }
 
-def check_sni(cloudfront_client, dist: Dict, account_id: str) -> Optional[Dict[str, Any]]:
+def check_sni(cloudfront_client, dist: Dict, account_id: str, config: Optional[Dict] = None) -> Optional[Dict[str, Any]]:
     """Check if SNI is enabled for the distribution"""
     try:
         dist_id = dist['Id']
         dist_arn = f"arn:aws:cloudfront::{account_id}:distribution/{dist_id}"
-        config = get_distribution_config(cloudfront_client, dist_id)
         
         if not config:
             return None
@@ -90,15 +94,14 @@ def check_sni(cloudfront_client, dist: Dict, account_id: str) -> Optional[Dict[s
         return create_check_result("cloudfront_distribution_sni_only",
                                 dist_arn, status, reason, account_id)
     except Exception as e:
-        logger.error(f"Error checking SNI for distribution {dist['Id']}: {e}")
+        logger.error(f"Error checking SNI for distribution {dist_id}: {e}")
         return None
 
-def check_waf(cloudfront_client, dist: Dict, account_id: str) -> Optional[Dict[str, Any]]:
+def check_waf(cloudfront_client, dist: Dict, account_id: str, config: Optional[Dict] = None) -> Optional[Dict[str, Any]]:
     """Check if WAF is enabled for the distribution"""
     try:
         dist_id = dist['Id']
         dist_arn = f"arn:aws:cloudfront::{account_id}:distribution/{dist_id}"
-        config = get_distribution_config(cloudfront_client, dist_id)
         
         if not config:
             return None
@@ -111,15 +114,14 @@ def check_waf(cloudfront_client, dist: Dict, account_id: str) -> Optional[Dict[s
         return create_check_result("cloudfront_distribution_waf_enabled",
                                 dist_arn, status, reason, account_id)
     except Exception as e:
-        logger.error(f"Error checking WAF for distribution {dist['Id']}: {e}")
+        logger.error(f"Error checking WAF for distribution {dist_id}: {e}")
         return None
 
-def check_origin_failover(cloudfront_client, dist: Dict, account_id: str) -> Optional[Dict[str, Any]]:
+def check_origin_failover(cloudfront_client, dist: Dict, account_id: str, config: Optional[Dict] = None) -> Optional[Dict[str, Any]]:
     """Check if origin failover is configured"""
     try:
         dist_id = dist['Id']
         dist_arn = f"arn:aws:cloudfront::{account_id}:distribution/{dist_id}"
-        config = get_distribution_config(cloudfront_client, dist_id)
         
         if not config:
             return None
@@ -132,15 +134,14 @@ def check_origin_failover(cloudfront_client, dist: Dict, account_id: str) -> Opt
         return create_check_result("cloudfront_distribution_origin_failover",
                                 dist_arn, status, reason, account_id)
     except Exception as e:
-        logger.error(f"Error checking origin failover for distribution {dist['Id']}: {e}")
+        logger.error(f"Error checking origin failover for distribution {dist_id}: {e}")
         return None
 
-def check_default_root(cloudfront_client, dist: Dict, account_id: str) -> Optional[Dict[str, Any]]:
+def check_default_root(cloudfront_client, dist: Dict, account_id: str, config: Optional[Dict] = None) -> Optional[Dict[str, Any]]:
     """Check if default root object is configured"""
     try:
         dist_id = dist['Id']
         dist_arn = f"arn:aws:cloudfront::{account_id}:distribution/{dist_id}"
-        config = get_distribution_config(cloudfront_client, dist_id)
         
         if not config:
             return None
@@ -153,15 +154,14 @@ def check_default_root(cloudfront_client, dist: Dict, account_id: str) -> Option
         return create_check_result("cloudfront_distribution_default_root",
                                 dist_arn, status, reason, account_id)
     except Exception as e:
-        logger.error(f"Error checking default root for distribution {dist['Id']}: {e}")
+        logger.error(f"Error checking default root for distribution {dist_id}: {e}")
         return None
 
-def check_custom_ssl(cloudfront_client, dist: Dict, account_id: str) -> Optional[Dict[str, Any]]:
+def check_custom_ssl(cloudfront_client, dist: Dict, account_id: str, config: Optional[Dict] = None) -> Optional[Dict[str, Any]]:
     """Check if custom SSL certificate is used"""
     try:
         dist_id = dist['Id']
         dist_arn = f"arn:aws:cloudfront::{account_id}:distribution/{dist_id}"
-        config = get_distribution_config(cloudfront_client, dist_id)
         
         if not config:
             return None
@@ -175,15 +175,14 @@ def check_custom_ssl(cloudfront_client, dist: Dict, account_id: str) -> Optional
         return create_check_result("cloudfront_distribution_custom_ssl",
                                 dist_arn, status, reason, account_id)
     except Exception as e:
-        logger.error(f"Error checking custom SSL for distribution {dist['Id']}: {e}")
+        logger.error(f"Error checking custom SSL for distribution {dist_id}: {e}")
         return None
 
-def check_origin_access_identity(cloudfront_client, dist: Dict, account_id: str) -> Optional[Dict[str, Any]]:
+def check_origin_access_identity(cloudfront_client, dist: Dict, account_id: str, config: Optional[Dict] = None) -> Optional[Dict[str, Any]]:
     """Check if S3 origins use OAI"""
     try:
         dist_id = dist['Id']
         dist_arn = f"arn:aws:cloudfront::{account_id}:distribution/{dist_id}"
-        config = get_distribution_config(cloudfront_client, dist_id)
         
         if not config:
             return None
@@ -203,15 +202,14 @@ def check_origin_access_identity(cloudfront_client, dist: Dict, account_id: str)
         return create_check_result("cloudfront_distribution_origin_access_identity",
                                 dist_arn, status, reason, account_id)
     except Exception as e:
-        logger.error(f"Error checking OAI for distribution {dist['Id']}: {e}")
+        logger.error(f"Error checking OAI for distribution {dist_id}: {e}")
         return None
 
-def check_field_level_encryption(cloudfront_client, dist: Dict, account_id: str) -> Optional[Dict[str, Any]]:
+def check_field_level_encryption(cloudfront_client, dist: Dict, account_id: str, config: Optional[Dict] = None) -> Optional[Dict[str, Any]]:
     """Check if field-level encryption is configured"""
     try:
         dist_id = dist['Id']
         dist_arn = f"arn:aws:cloudfront::{account_id}:distribution/{dist_id}"
-        config = get_distribution_config(cloudfront_client, dist_id)
         
         if not config:
             return None
@@ -225,15 +223,14 @@ def check_field_level_encryption(cloudfront_client, dist: Dict, account_id: str)
         return create_check_result("cloudfront_distribution_field_level_encryption",
                                 dist_arn, status, reason, account_id)
     except Exception as e:
-        logger.error(f"Error checking field-level encryption for distribution {dist['Id']}: {e}")
+        logger.error(f"Error checking field-level encryption for distribution {dist_id}: {e}")
         return None
 
-def check_tls_version(cloudfront_client, dist: Dict, account_id: str) -> Optional[Dict[str, Any]]:
+def check_tls_version(cloudfront_client, dist: Dict, account_id: str, config: Optional[Dict] = None) -> Optional[Dict[str, Any]]:
     """Check if latest TLS version is used"""
     try:
         dist_id = dist['Id']
         dist_arn = f"arn:aws:cloudfront::{account_id}:distribution/{dist_id}"
-        config = get_distribution_config(cloudfront_client, dist_id)
         
         if not config:
             return None
@@ -247,7 +244,7 @@ def check_tls_version(cloudfront_client, dist: Dict, account_id: str) -> Optiona
         return create_check_result("cloudfront_distribution_tls_version",
                                 dist_arn, status, reason, account_id)
     except Exception as e:
-        logger.error(f"Error checking TLS version for distribution {dist['Id']}: {e}")
+        logger.error(f"Error checking TLS version for distribution {dist_id}: {e}")
         return None
 
 def batch_insert_results(results: List[Dict[str, Any]]) -> None:
@@ -303,46 +300,61 @@ def check_cloudfront():
         if not distributions:
             return jsonify({"error": "No CloudFront distributions found"}), 404
         
-        # Run all checks sequentially
+        # Pre-fetch and cache all distribution configs
+        logger.info("Pre-fetching distribution configurations...")
+        dist_configs = {}
+        for dist in distributions:
+            config = get_distribution_config(cloudfront_client, dist['Id'])
+            if config:
+                dist_configs[dist['Id']] = config
+        logger.info(f"Cached {len(dist_configs)} distribution configurations")
+        
+        # Run all checks sequentially using cached configs
         all_results = []
         for dist in distributions:
+            if dist['Id'] not in dist_configs:
+                logger.warning(f"Skipping distribution {dist['Id']} - no config available")
+                continue
+                
+            config = dist_configs[dist['Id']]
+            
             # Check 1: SNI
-            result = check_sni(cloudfront_client, dist, account_id)
+            result = check_sni(cloudfront_client, dist, account_id, config)
             if result:
                 all_results.append(result)
             
             # Check 2: WAF
-            result = check_waf(cloudfront_client, dist, account_id)
+            result = check_waf(cloudfront_client, dist, account_id, config)
             if result:
                 all_results.append(result)
             
             # Check 3: Origin Failover
-            result = check_origin_failover(cloudfront_client, dist, account_id)
+            result = check_origin_failover(cloudfront_client, dist, account_id, config)
             if result:
                 all_results.append(result)
             
             # Check 4: Default Root Object
-            result = check_default_root(cloudfront_client, dist, account_id)
+            result = check_default_root(cloudfront_client, dist, account_id, config)
             if result:
                 all_results.append(result)
             
             # Check 5: Custom SSL Certificate
-            result = check_custom_ssl(cloudfront_client, dist, account_id)
+            result = check_custom_ssl(cloudfront_client, dist, account_id, config)
             if result:
                 all_results.append(result)
             
             # Check 6: Origin Access Identity
-            result = check_origin_access_identity(cloudfront_client, dist, account_id)
+            result = check_origin_access_identity(cloudfront_client, dist, account_id, config)
             if result:
                 all_results.append(result)
             
             # Check 7: Field-level Encryption
-            result = check_field_level_encryption(cloudfront_client, dist, account_id)
+            result = check_field_level_encryption(cloudfront_client, dist, account_id, config)
             if result:
                 all_results.append(result)
             
             # Check 8: TLS Version
-            result = check_tls_version(cloudfront_client, dist, account_id)
+            result = check_tls_version(cloudfront_client, dist, account_id, config)
             if result:
                 all_results.append(result)
         
