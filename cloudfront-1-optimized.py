@@ -17,16 +17,9 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-
-# Load configuration
-config = configparser.ConfigParser()
-config.read('config.ini')
 
 @dataclass
 class AWSClients:
@@ -39,18 +32,31 @@ class AWSClients:
 
 def get_aws_clients() -> AWSClients:
     """Create and cache AWS client instances"""
-    session = boto3.Session(
-        aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID_AWS_ACCESS_KEY_ID'),
-        aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY_AWS_SECRET_ACCESS_KEY'),
-        region_name=os.environ.get('AWS_DEFAULT_REGION_AWS_DEFAULT_REGION', 'us-east-1')
-    )
-    
-    cloudfront = session.client('cloudfront')
-    s3 = session.client('s3')
-    sts = session.client('sts')
-    account_id = sts.get_caller_identity()['Account']
-    
-    return AWSClients(session, cloudfront, s3, sts, account_id)
+    try:
+        # Get AWS credentials from environment variables
+        aws_key = os.environ.get('AWS_ACCESS_KEY_ID_AWS_ACCESS_KEY_ID')
+        aws_secret = os.environ.get('AWS_SECRET_ACCESS_KEY_AWS_SECRET_ACCESS_KEY')
+        aws_region = os.environ.get('AWS_DEFAULT_REGION_AWS_DEFAULT_REGION', 'us-east-1')
+        
+        if not aws_key or not aws_secret:
+            raise ValueError("Missing required AWS credentials in environment variables")
+            
+        session = boto3.Session(
+            aws_access_key_id=aws_key,
+            aws_secret_access_key=aws_secret,
+            region_name=aws_region
+        )
+        
+        cloudfront = session.client('cloudfront')
+        s3 = session.client('s3')
+        sts = session.client('sts')
+        account_id = sts.get_caller_identity()['Account']
+        
+        logger.info("Successfully initialized AWS clients")
+        return AWSClients(session, cloudfront, s3, sts, account_id)
+    except Exception as e:
+        logger.error(f"Failed to initialize AWS clients: {e}")
+        raise
 
 @lru_cache(maxsize=1)
 def get_all_distributions(cloudfront_client) -> List[Dict]:
@@ -61,6 +67,7 @@ def get_all_distributions(cloudfront_client) -> List[Dict]:
         for page in paginator.paginate():
             if 'Items' in page.get('DistributionList', {}):
                 distributions.extend(page['DistributionList']['Items'])
+        logger.info(f"Cached {len(distributions)} CloudFront distributions")
         return distributions
     except Exception as e:
         logger.error(f"Error fetching distributions: {e}")
@@ -71,18 +78,27 @@ def get_all_s3_buckets(s3_client) -> set[str]:
     """Cache and return all S3 bucket names"""
     try:
         response = s3_client.list_buckets()
-        return {bucket['Name'] for bucket in response['Buckets']}
+        buckets = {bucket['Name'] for bucket in response['Buckets']}
+        logger.info(f"Cached {len(buckets)} S3 buckets")
+        return buckets
     except Exception as e:
         logger.error(f"Error listing S3 buckets: {e}")
         return set()
 
-def get_distribution_config(cloudfront_client, dist_id: str) -> Optional[Dict]:
-    """Get distribution config with error handling"""
+@lru_cache(maxsize=256)
+def get_distribution_config_cached(cloudfront_client, dist_id: str) -> Optional[Dict]:
+    """Get and cache distribution config"""
     try:
-        return cloudfront_client.get_distribution_config(Id=dist_id)
+        config = cloudfront_client.get_distribution_config(Id=dist_id)
+        logger.debug(f"Cached configuration for distribution {dist_id}")
+        return config
     except Exception as e:
         logger.error(f"Error getting config for distribution {dist_id}: {e}")
         return None
+
+def get_distribution_config(cloudfront_client, dist_id: str) -> Optional[Dict]:
+    """Get distribution config with caching"""
+    return get_distribution_config_cached(cloudfront_client, dist_id)
 
 def create_check_result(check_type: str, resource: str, status: str, reason: str, account_id: str) -> Dict[str, Any]:
     """Create a standardized check result"""
@@ -209,12 +225,23 @@ def batch_insert_results(results: List[Dict[str, Any]]) -> None:
     if not results:
         return
         
+    conn = None
+    cur = None
     try:
+        # Get database credentials from environment variables
+        host = os.environ.get('POSTGRES_HOST')
+        database = os.environ.get('POSTGRES_DB')
+        user = os.environ.get('POSTGRES_USER')
+        password = os.environ.get('POSTGRES_PASSWORD')
+        
+        if not all([host, database, user, password]):
+            raise ValueError("Missing required database credentials in environment variables")
+            
         conn = psycopg2.connect(
-            host=config['PostgreSQL']['HOST'],
-            database=config['PostgreSQL']['DATABASE'],
-            user=config['PostgreSQL']['USER'],
-            password=config['PostgreSQL']['PASSWORD']
+            host=host,
+            database=database,
+            user=user,
+            password=password
         )
         cur = conn.cursor()
         
@@ -228,6 +255,7 @@ def batch_insert_results(results: List[Dict[str, Any]]) -> None:
         )
         
         conn.commit()
+        logger.info(f"Successfully inserted {len(args)} results into database")
     except Exception as e:
         logger.error(f"Database error: {e}")
         if conn:
