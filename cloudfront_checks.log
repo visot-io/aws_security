@@ -84,3 +84,36 @@ connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection re
 2025-01-22 21:08:59,090 - __main__ - INFO - Successfully inserted 110 results into database
 2025-01-22 21:08:59,090 - __main__ - INFO - Successfully inserted results into database
 2025-01-22 21:08:59,091 - __main__ - INFO - Completed all checks in 3.302617 seconds
+2025-01-22 21:25:21,849 - __main__ - INFO - Reading configuration from: /home/ubuntu/workspace/config.ini
+2025-01-22 21:25:21,850 - __main__ - INFO - Starting server on port 5001...
+2025-01-22 21:25:21,861 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-01-22 21:25:21,861 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-22 21:25:52,175 - __main__ - INFO - AWS credentials loaded successfully
+2025-01-22 21:25:53,865 - __main__ - ERROR - Error listing S3 buckets: An error occurred (AccessDenied) when calling the ListBuckets operation: User: arn:aws:iam::502685744548:user/audit-user is not authorized to perform: s3:ListAllMyBuckets with an explicit deny in an identity-based policy
+2025-01-22 21:25:56,212 - __main__ - INFO - Completed S3 origin check for 22 distributions
+2025-01-22 21:26:16,097 - werkzeug - INFO - 127.0.0.1 - - [22/Jan/2025 21:26:16] "GET /check-cloudfront-1 HTTP/1.1" 200 -
+2025-01-22 21:26:23,378 - __main__ - INFO - Reading configuration from: /home/ubuntu/workspace/config.ini
+2025-01-22 21:26:23,378 - __main__ - INFO - Starting server on port 5001...
+2025-01-22 21:26:23,390 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-01-22 21:26:23,390 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-22 21:26:50,490 - __main__ - INFO - AWS credentials loaded successfully
+2025-01-22 21:26:51,724 - __main__ - ERROR - Error listing S3 buckets: An error occurred (AccessDenied) when calling the ListBuckets operation: User: arn:aws:iam::502685744548:user/audit-user is not authorized to perform: s3:ListAllMyBuckets with an explicit deny in an identity-based policy
+2025-01-22 21:26:54,056 - __main__ - INFO - Completed S3 origin check for 22 distributions
+2025-01-22 21:27:13,772 - werkzeug - INFO - 127.0.0.1 - - [22/Jan/2025 21:27:13] "GET /check-cloudfront-1 HTTP/1.1" 200 -
+2025-01-22 21:29:39,849 - __main__ - INFO - Reading configuration from: /home/ubuntu/workspace/config.ini
+2025-01-22 21:29:39,850 - __main__ - INFO - Starting server on port 5001...
+2025-01-22 21:29:39,862 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-01-22 21:29:39,862 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-22 21:30:09,584 - __main__ - INFO - AWS credentials loaded successfully
+2025-01-22 21:30:10,018 - __main__ - INFO - Establishing database connection...
+2025-01-22 21:30:10,026 - __main__ - INFO - Database connection established successfully
+2025-01-22 21:30:11,119 - __main__ - ERROR - Error listing S3 buckets: An error occurred (AccessDenied) when calling the ListBuckets operation: User: arn:aws:iam::502685744548:user/audit-user is not authorized to perform: s3:ListAllMyBuckets with an explicit deny in an identity-based policy
+2025-01-22 21:30:13,400 - __main__ - INFO - Completed S3 origin check for 22 distributions
+2025-01-22 21:30:16,189 - __main__ - INFO - Completed encryption check for 22 distributions
+2025-01-22 21:30:18,913 - __main__ - INFO - Completed geo restrictions check for 22 distributions
+2025-01-22 21:30:21,735 - __main__ - INFO - Completed secure cipher check for 22 distributions
+2025-01-22 21:30:24,659 - __main__ - INFO - Completed non-S3 origins encryption check for 22 distributions
+2025-01-22 21:30:33,141 - werkzeug - INFO - 127.0.0.1 - - [22/Jan/2025 21:30:33] "GET /check-cloudfront-1 HTTP/1.1" 200 -

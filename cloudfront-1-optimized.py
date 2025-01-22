@@ -58,13 +58,24 @@ class AWSClients:
 def get_aws_clients() -> AWSClients:
     """Create and cache AWS client instances"""
     try:
-        # Get AWS credentials from environment variables
-        aws_key = os.environ.get('AWS_ACCESS_KEY_ID_AWS_ACCESS_KEY_ID')
-        aws_secret = os.environ.get('AWS_SECRET_ACCESS_KEY_AWS_SECRET_ACCESS_KEY')
-        aws_region = os.environ.get('AWS_DEFAULT_REGION_AWS_DEFAULT_REGION', 'us-east-1')
+        # Load configuration
+        config = configparser.ConfigParser()
+        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini')
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"Config file not found at {config_path}")
         
+        config.read(config_path)
+        logger.info(f"Reading AWS credentials from: {config_path}")
+        
+        try:
+            aws_key = config['AWS']['AWS_ACCESS_KEY_ID']
+            aws_secret = config['AWS']['AWS_SECRET_ACCESS_KEY']
+            aws_region = config['AWS'].get('AWS_REGION', 'us-east-1')
+        except KeyError as e:
+            raise ValueError(f"Missing AWS credentials in config.ini: {e}")
+            
         if not aws_key or not aws_secret:
-            raise ValueError("Missing required AWS credentials in environment variables")
+            raise ValueError("Empty AWS credentials in config.ini")
             
         session = boto3.Session(
             aws_access_key_id=aws_key,
@@ -257,14 +268,25 @@ def batch_insert_results(results: List[Dict[str, Any]]) -> None:
     conn = None
     cur = None
     try:
-        # Get database credentials from environment variables
-        host = os.environ.get('POSTGRES_HOST')
-        database = os.environ.get('POSTGRES_DB')
-        user = os.environ.get('POSTGRES_USER')
-        password = os.environ.get('POSTGRES_PASSWORD')
+        # Load database configuration from config.ini
+        config = configparser.ConfigParser()
+        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini')
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"Config file not found at {config_path}")
+            
+        config.read(config_path)
+        logger.info(f"Reading PostgreSQL credentials from: {config_path}")
         
+        try:
+            host = config['PostgreSQL']['HOST']
+            database = config['PostgreSQL']['DATABASE']
+            user = config['PostgreSQL']['USER']
+            password = config['PostgreSQL']['PASSWORD']
+        except KeyError as e:
+            raise ValueError(f"Missing PostgreSQL configuration in config.ini: {e}")
+            
         if not all([host, database, user, password]):
-            raise ValueError("Missing required database credentials in environment variables")
+            raise ValueError("Empty PostgreSQL credentials in config.ini")
             
         conn = psycopg2.connect(
             host=host,
