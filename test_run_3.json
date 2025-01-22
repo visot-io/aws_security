@@ -1,0 +1,889 @@
+{
+  "duration_seconds": 3.47704,
+  "results": [
+    {
+      "account": "502685744548",
+      "reason": "E286WRU4FVXIPD Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E286WRU4FVXIPD",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ENFVXZ5VFQGQF Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ENFVXZ5VFQGQF",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E286WRU4FVXIPD data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E286WRU4FVXIPD",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1QYSWZS0WMBOZ Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1QYSWZS0WMBOZ",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E35YTCBLHOJ55G Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E35YTCBLHOJ55G",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ENFVXZ5VFQGQF point to non-existent S3 origin s3_oac.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ENFVXZ5VFQGQF",
+      "status": "alarm",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E35YTCBLHOJ55G does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E35YTCBLHOJ55G",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3OYGB36Z5HNOD data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3OYGB36Z5HNOD",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E286WRU4FVXIPD does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E286WRU4FVXIPD",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ENFVXZ5VFQGQF uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ENFVXZ5VFQGQF",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3OYGB36Z5HNOD uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3OYGB36Z5HNOD",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3OYGB36Z5HNOD Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3OYGB36Z5HNOD",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E286WRU4FVXIPD uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E286WRU4FVXIPD",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E35YTCBLHOJ55G uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E35YTCBLHOJ55G",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1QYSWZS0WMBOZ uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1QYSWZS0WMBOZ",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E286WRU4FVXIPD logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E286WRU4FVXIPD",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ENFVXZ5VFQGQF data not encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ENFVXZ5VFQGQF",
+      "status": "alarm",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1QYSWZS0WMBOZ logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1QYSWZS0WMBOZ",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1QYSWZS0WMBOZ does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1QYSWZS0WMBOZ",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1QYSWZS0WMBOZ data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1QYSWZS0WMBOZ",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3OYGB36Z5HNOD does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3OYGB36Z5HNOD",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ENFVXZ5VFQGQF logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ENFVXZ5VFQGQF",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E35YTCBLHOJ55G data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E35YTCBLHOJ55G",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3OYGB36Z5HNOD logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3OYGB36Z5HNOD",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E35YTCBLHOJ55G logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E35YTCBLHOJ55G",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3FW5IXPL950R7 does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3FW5IXPL950R7",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3FW5IXPL950R7 data not encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3FW5IXPL950R7",
+      "status": "alarm",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3FW5IXPL950R7 Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3FW5IXPL950R7",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3FW5IXPL950R7 uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3FW5IXPL950R7",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3FW5IXPL950R7 logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3FW5IXPL950R7",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1KRITR8JH9VYW does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1KRITR8JH9VYW",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1KRITR8JH9VYW data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1KRITR8JH9VYW",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1KRITR8JH9VYW Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1KRITR8JH9VYW",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1KRITR8JH9VYW uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1KRITR8JH9VYW",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1KRITR8JH9VYW logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1KRITR8JH9VYW",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2TW1YNLOLVCTH does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2TW1YNLOLVCTH",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2TW1YNLOLVCTH data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2TW1YNLOLVCTH",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2TW1YNLOLVCTH Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2TW1YNLOLVCTH",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2TW1YNLOLVCTH uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2TW1YNLOLVCTH",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2TW1YNLOLVCTH logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2TW1YNLOLVCTH",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1AYAQR178EV15 does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1AYAQR178EV15",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1AYAQR178EV15 data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1AYAQR178EV15",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1AYAQR178EV15 Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1AYAQR178EV15",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1AYAQR178EV15 uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1AYAQR178EV15",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1AYAQR178EV15 logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1AYAQR178EV15",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E31APBUX9GYSW5 point to non-existent S3 origin stere-policyholder-staging.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E31APBUX9GYSW5",
+      "status": "alarm",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E31APBUX9GYSW5 data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E31APBUX9GYSW5",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E31APBUX9GYSW5 Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E31APBUX9GYSW5",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E31APBUX9GYSW5 uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E31APBUX9GYSW5",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E31APBUX9GYSW5 logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E31APBUX9GYSW5",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2Y2EKHVI479FW does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2Y2EKHVI479FW",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2Y2EKHVI479FW data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2Y2EKHVI479FW",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2Y2EKHVI479FW Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2Y2EKHVI479FW",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2Y2EKHVI479FW uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2Y2EKHVI479FW",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2Y2EKHVI479FW logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2Y2EKHVI479FW",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2U7PSM8UM6B7Q does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2U7PSM8UM6B7Q",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2U7PSM8UM6B7Q data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2U7PSM8UM6B7Q",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2U7PSM8UM6B7Q Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2U7PSM8UM6B7Q",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2U7PSM8UM6B7Q uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2U7PSM8UM6B7Q",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2U7PSM8UM6B7Q logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2U7PSM8UM6B7Q",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1FYUNGLLG2027 does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1FYUNGLLG2027",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1FYUNGLLG2027 data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1FYUNGLLG2027",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1FYUNGLLG2027 Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1FYUNGLLG2027",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1FYUNGLLG2027 uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1FYUNGLLG2027",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1FYUNGLLG2027 logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1FYUNGLLG2027",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ERW4Q6F9RTDXJ does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ERW4Q6F9RTDXJ",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ERW4Q6F9RTDXJ data not encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ERW4Q6F9RTDXJ",
+      "status": "alarm",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ERW4Q6F9RTDXJ Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ERW4Q6F9RTDXJ",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ERW4Q6F9RTDXJ uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ERW4Q6F9RTDXJ",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ERW4Q6F9RTDXJ logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ERW4Q6F9RTDXJ",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2AYOXBK5TGAE0 point to non-existent S3 origin 1983436-bucket.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2AYOXBK5TGAE0",
+      "status": "alarm",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2AYOXBK5TGAE0 data not encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2AYOXBK5TGAE0",
+      "status": "alarm",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2AYOXBK5TGAE0 Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2AYOXBK5TGAE0",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2AYOXBK5TGAE0 uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2AYOXBK5TGAE0",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E2AYOXBK5TGAE0 logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E2AYOXBK5TGAE0",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ENATRSLFHHTVZ does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ENATRSLFHHTVZ",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ENATRSLFHHTVZ data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ENATRSLFHHTVZ",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ENATRSLFHHTVZ Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ENATRSLFHHTVZ",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ENATRSLFHHTVZ uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ENATRSLFHHTVZ",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ENATRSLFHHTVZ logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ENATRSLFHHTVZ",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1MW0RVGDS5NGO does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1MW0RVGDS5NGO",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1MW0RVGDS5NGO data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1MW0RVGDS5NGO",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1MW0RVGDS5NGO Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1MW0RVGDS5NGO",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1MW0RVGDS5NGO uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1MW0RVGDS5NGO",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1MW0RVGDS5NGO logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1MW0RVGDS5NGO",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ELEH9ST37GXU7 does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ELEH9ST37GXU7",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ELEH9ST37GXU7 data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ELEH9ST37GXU7",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ELEH9ST37GXU7 Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ELEH9ST37GXU7",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ELEH9ST37GXU7 uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ELEH9ST37GXU7",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "ELEH9ST37GXU7 logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/ELEH9ST37GXU7",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3C7XGAJ367QG6 point to non-existent S3 origin s3-sandbox-policyholder-portal.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3C7XGAJ367QG6",
+      "status": "alarm",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3C7XGAJ367QG6 data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3C7XGAJ367QG6",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3C7XGAJ367QG6 Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3C7XGAJ367QG6",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3C7XGAJ367QG6 uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3C7XGAJ367QG6",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3C7XGAJ367QG6 logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3C7XGAJ367QG6",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1LMP0HESH3QJ5 does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1LMP0HESH3QJ5",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1LMP0HESH3QJ5 data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1LMP0HESH3QJ5",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1LMP0HESH3QJ5 Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1LMP0HESH3QJ5",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1LMP0HESH3QJ5 uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1LMP0HESH3QJ5",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1LMP0HESH3QJ5 logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1LMP0HESH3QJ5",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1JC2HWVAAES0I does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1JC2HWVAAES0I",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1JC2HWVAAES0I data encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1JC2HWVAAES0I",
+      "status": "ok",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1JC2HWVAAES0I Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1JC2HWVAAES0I",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1JC2HWVAAES0I uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1JC2HWVAAES0I",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E1JC2HWVAAES0I logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E1JC2HWVAAES0I",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3ORGNDGHFVWF9 does not point to any non-existent S3 origins.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3ORGNDGHFVWF9",
+      "status": "ok",
+      "type": "cloudfront_distribution_no_non_existent_s3_origin"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3ORGNDGHFVWF9 data not encrypted in transit.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3ORGNDGHFVWF9",
+      "status": "alarm",
+      "type": "cloudfront_distribution_encryption_in_transit_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3ORGNDGHFVWF9 Geo Restriction disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3ORGNDGHFVWF9",
+      "status": "alarm",
+      "type": "cloudfront_distribution_geo_restrictions_enabled"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3ORGNDGHFVWF9 uses secure cipher.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3ORGNDGHFVWF9",
+      "status": "ok",
+      "type": "cloudfront_distribution_use_secure_cipher"
+    },
+    {
+      "account": "502685744548",
+      "reason": "E3ORGNDGHFVWF9 logging disabled.",
+      "region": "global",
+      "resource": "arn:aws:cloudfront::502685744548:distribution/E3ORGNDGHFVWF9",
+      "status": "alarm",
+      "type": "cloudfront_distribution_logging"
+    }
+  ],
+  "successful_checks": 110,
+  "total_checks": 110
+}
+
+Total time: 3.480926s
